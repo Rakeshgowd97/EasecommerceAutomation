@@ -1,0 +1,105 @@
+API AUtomatio using PostMan
+
+1. Create a Login Request in Postman
+Method: POST
+
+URL: https://easecommerce.in/api/v2/login
+
+Body (JSON - raw + application/json):
+
+2.json
+Copy
+Edit
+{
+  "username": "demouser@easecommerce.in",
+  "password": "cE7iQPP^"
+}
+
+const responseJson = pm.response.json();
+pm.environment.set("authToken", responseJson.token);
+This saves the token into a Postman environment variable called authToken.
+3. Create Another Request Using the Token
+Method: GET
+
+URL:
+
+plaintext
+Copy
+Edit
+https://easecommerce.in/api/v2/manage/warehouse/master/all?group=default
+Headers:
+
+Key: Authorization
+
+Value: Bearer {{authToken}}
+
+(Optional) Add this under Tests tab to check the response:
+
+javascript
+Copy
+Edit
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+
+////////////////////////////////////////////
+2)Warehouse API Test:
+Step 1: Create a new request in Postman:
+
+Method: GET
+
+URL:
+https://easecommerce.in/api/v2/manage/warehouse/master/all?group=default
+Step 2: Add the Authorization Header:
+
+Key: Authorization
+
+Value: Bearer {{authToken}}
+ 2. Add Test Script (Optional)
+Click on the "Tests" tab in Postman and paste this:
+
+javascript
+Copy
+Edit
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+3. Chain it After Login (Optional)
+Then run this Warehouse GET request, which uses that token.
+Postman Flow Summary
+POST /api/v2/login → Extract and save token to authToken
+
+GET /api/v2/manage/warehouse/master/all?group=default
+→ Use Authorization: Bearer {{authToken}}
+→ Validate response
+
+
+//////////////////////////////////////////////////////////////////////////
+3)Negative Test Cases:
+
+
+Note:?group=default query parameter – we’re testing the behavior when it’s missing.
+
+
+
+Key	Value
+Authorization	Bearer {{authToken}}
+Make sure authToken is already set as an environment variable (e.g. via your login request).
+ Add Tests (Validation)
+Go to the Tests tab and paste this JavaScript:
+
+// Check for expected graceful status
+pm.test("Status is 200 or 400 (graceful handling)", function () {
+    pm.expect([200, 400]).to.include(pm.response.code);
+});
+
+// Optional: Show message if unexpected
+if (![200, 400].includes(pm.response.code)) {
+    console.warn("⚠️ Unexpected status code:", pm.response.code);
+}
+ Run the Request
+Click Send.
+
+Observe the status code and response body.
